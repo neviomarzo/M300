@@ -6,368 +6,48 @@
 
 ---
 
-## Woche 1
-
-**Datum:**
-**Lektionen:** 4 (+ x Stunden Heimarbeit)
-
-### Was habe ich gemacht?
-
-- ...
-
-### Was habe ich gelernt?
-
-- ...
-
-### Was hat funktioniert?
-
-- ...
-
-### Was hat nicht funktioniert / Probleme?
-
-| Problem | Ursache | Lösung |
-|---|---|---|
-| ... | ... | ... |
-
-### Reflexion
-
-> Wie war mein Vorgehen? Was würde ich nächstes Mal anders machen?
-
-...
-
-### Nächste Schritte
-
-- [ ] ...
-- [ ] ...
+## Woche 1 – 22.05.2026
 
 ---
 
-## Woche 2
-
-**Datum:**
-**Lektionen:** 4 (+ x Stunden Heimarbeit)
-
-### Was habe ich gemacht?
-
-- ...
-
-### Was habe ich gelernt?
-
-- ...
-
-### Was hat funktioniert?
-
-- ...
-
-### Was hat nicht funktioniert / Probleme?
-
-| Problem | Ursache | Lösung |
-|---|---|---|
-| ... | ... | ... |
-
-### Reflexion
-
-> Wie war mein Vorgehen? Was würde ich nächstes Mal anders machen?
-
-...
-
-### Nächste Schritte
-
-- [ ] ...
-- [ ] ...
+### Tagesziele
+- [x] Eigene Lernumgebung einrichten
+- [x] Link zu Repo in Link-Liste eintragen
+- [x] Erste Idee für eigenes Projekt entwickeln und dokumentieren
+  - [x] Pflichtaspekte gemäss Kompetenzmatrix abgedeckt
+  - [x] Use-Case mit praktischem Nutzen definiert
 
 ---
 
-## Woche 3
-
-**Datum:**
-**Lektionen:** 4 (+ x Stunden Heimarbeit)
-
-### Was habe ich gemacht?
-
-- ...
-
-### Was habe ich gelernt?
-
-- ...
-
-### Was hat funktioniert?
-
-- ...
-
-### Was hat nicht funktioniert / Probleme?
-
-| Problem | Ursache | Lösung |
-|---|---|---|
-| ... | ... | ... |
-
-### Reflexion
-
-> Wie war mein Vorgehen? Was würde ich nächstes Mal anders machen?
-
-...
-
-### Nächste Schritte
-
-- [ ] ...
-- [ ] ...
+### Resultate
+- Lernumgebung eingerichtet (Terraform, AWS CLI installiert und konfiguriert)
+- GitHub Repo `M300` erstellt und verlinkt
+- Projektidee definiert: RKE2 Multi-Node Kubernetes-Cluster auf AWS mit CI/CD (GitHub Actions), Monitoring (Prometheus + Grafana) und mehreren Apps in getrennten Namespaces
 
 ---
 
-## Woche 4
+### Probleme & Reflexion
 
-**Datum:**
-**Lektionen:** 4 (+ x Stunden Heimarbeit)
-
-### Was habe ich gemacht?
-
-- ...
-
-### Was habe ich gelernt?
-
-- ...
-
-### Was hat funktioniert?
-
-- ...
-
-### Was hat nicht funktioniert / Probleme?
-
-| Problem | Ursache | Lösung |
+| Problem | Ursache | Lösung / Reflexion |
 |---|---|---|
-| ... | ... | ... |
-
-### Reflexion
-
-> Wie war mein Vorgehen? Was würde ich nächstes Mal anders machen?
-
-...
-
-### Nächste Schritte
-
-- [ ] ...
-- [ ] ...
+| `sudo apt install terraform` fehlgeschlagen | Terraform nicht im Standard-APT Repository | HashiCorp Repository manuell hinzugefügt |
 
 ---
 
-## Woche 5
+### Ressourcen
 
-**Datum:**
-**Lektionen:** 4 (+ x Stunden Heimarbeit)
-
-### Was habe ich gemacht?
-
-- ...
-
-### Was habe ich gelernt?
-
-- ...
-
-### Was hat funktioniert?
-
-- ...
-
-### Was hat nicht funktioniert / Probleme?
-
-| Problem | Ursache | Lösung |
-|---|---|---|
-| ... | ... | ... |
-
-### Reflexion
-
-> Wie war mein Vorgehen? Was würde ich nächstes Mal anders machen?
-
-...
-
-### Nächste Schritte
-
-- [ ] ...
-- [ ] ...
+| Ressource | Link |
+|---|---|
+| Terraform Installationsdoku | https://developer.hashicorp.com/terraform/downloads |
+| AWS CLI Doku | https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2.html |
+| RKE2 Doku | https://docs.rke2.io |
 
 ---
 
-## Woche 6
+### Praktische Übung
 
-**Datum:**
-**Lektionen:** 4 (+ x Stunden Heimarbeit)
+Was gemacht:
+Terraform initialisiert und erste Konfiguration geschrieben (VPC, Subnetz, Internet Gateway, Route Table) — noch kein `terraform apply`, nur Struktur aufgebaut.
 
-### Was habe ich gemacht?
-
-- ...
-
-### Was habe ich gelernt?
-
-- ...
-
-### Was hat funktioniert?
-
-- ...
-
-### Was hat nicht funktioniert / Probleme?
-
-| Problem | Ursache | Lösung |
-|---|---|---|
-| ... | ... | ... |
-
-### Reflexion
-
-> Wie war mein Vorgehen? Was würde ich nächstes Mal anders machen?
-
-...
-
-### Nächste Schritte
-
-- [ ] ...
-- [ ] ...
-
----
-
-## Woche 7
-
-**Datum:**
-**Lektionen:** 4 (+ x Stunden Heimarbeit)
-
-### Was habe ich gemacht?
-
-- ...
-
-### Was habe ich gelernt?
-
-- ...
-
-### Was hat funktioniert?
-
-- ...
-
-### Was hat nicht funktioniert / Probleme?
-
-| Problem | Ursache | Lösung |
-|---|---|---|
-| ... | ... | ... |
-
-### Reflexion
-
-> Wie war mein Vorgehen? Was würde ich nächstes Mal anders machen?
-
-...
-
-### Nächste Schritte
-
-- [ ] ...
-- [ ] ...
-
----
-
-## Woche 8
-
-**Datum:**
-**Lektionen:** 4 (+ x Stunden Heimarbeit)
-
-### Was habe ich gemacht?
-
-- ...
-
-### Was habe ich gelernt?
-
-- ...
-
-### Was hat funktioniert?
-
-- ...
-
-### Was hat nicht funktioniert / Probleme?
-
-| Problem | Ursache | Lösung |
-|---|---|---|
-| ... | ... | ... |
-
-### Reflexion
-
-> Wie war mein Vorgehen? Was würde ich nächstes Mal anders machen?
-
-...
-
-### Nächste Schritte
-
-- [ ] ...
-- [ ] ...
-
----
-
-## Woche 9
-
-**Datum:**
-**Lektionen:** 4 (+ x Stunden Heimarbeit)
-
-### Was habe ich gemacht?
-
-- ...
-
-### Was habe ich gelernt?
-
-- ...
-
-### Was hat funktioniert?
-
-- ...
-
-### Was hat nicht funktioniert / Probleme?
-
-| Problem | Ursache | Lösung |
-|---|---|---|
-| ... | ... | ... |
-
-### Reflexion
-
-> Wie war mein Vorgehen? Was würde ich nächstes Mal anders machen?
-
-...
-
-### Nächste Schritte
-
-- [ ] ...
-- [ ] ...
-
----
-
-## Woche 10
-
-**Datum:**
-**Lektionen:** 4 (+ x Stunden Heimarbeit)
-
-### Was habe ich gemacht?
-
-- ...
-
-### Was habe ich gelernt?
-
-- ...
-
-### Was hat funktioniert?
-
-- ...
-
-### Was hat nicht funktioniert / Probleme?
-
-| Problem | Ursache | Lösung |
-|---|---|---|
-| ... | ... | ... |
-
-### Reflexion
-
-> Wie war mein Vorgehen? Was würde ich nächstes Mal anders machen?
-
-...
-
-### Nächste Schritte
-
-- [ ] ...
-- [ ] ...
-
----
-
-## Gesamtreflexion
-
-> Am Ende des Moduls: Was habe ich insgesamt gelernt? Was war die grösste Herausforderung? Was würde ich anders machen?
-
-...
+Was gelernt:
+Terraform funktioniert mit Providern die aus der Registry geladen werden. Infrastruktur wird deklarativ beschrieben — man definiert den Zielzustand, Terraform kümmert sich ums Wie.
