@@ -21,6 +21,7 @@
     - [Netzwerk (VPC)](#netzwerk-vpc)
     - [Security Groups](#security-groups)
     - [SSH Key Pair](#ssh-key-pair)
+    - [EC2 Instanzen](#ec2-instanzen)
     - [Wichtige Befehle](#wichtige-befehle)
 
 
@@ -220,6 +221,18 @@ Ausgehender Traffic ist komplett erlaubt (`0.0.0.0/0`).
 Für den SSH-Zugriff auf die EC2 Nodes wird ein Key Pair benötigt. Der öffentliche Schlüssel (`m300.pub`) wird via Terraform in AWS importiert und den EC2 Instanzen zugewiesen.
 
 ![key_pair](media/key_pair.png)
+
+### EC2 Instanzen
+
+Die drei EC2 Instanzen (1 Master, 2 Worker) werden via Terraform provisioniert. Als Betriebssystem wird Ubuntu 22.04 LTS verwendet, da es von RKE2 offiziell unterstützt wird und bis 2027 mit Sicherheitsupdates versorgt wird. Das AMI wird automatisch über einen Filter auf das neueste offizielle Ubuntu 22.04 Image von Canonical gesetzt.
+
+| Node     | Typ       | Storage  |
+| -------- | --------- | -------- |
+| master   | t3.medium | 20GB gp3 |
+| worker-1 | t3.medium | 20GB gp3 |
+| worker-2 | t3.medium | 20GB gp3 |
+
+![ec2_instances](media/ec2_instances.png)
 
 ### Wichtige Befehle
 
