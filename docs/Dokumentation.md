@@ -173,6 +173,24 @@ und hier noch in AWS die der erstellte VPC
 
 ![VPC](media/VPC.png)
 
+### Security Groups
+
+Security Groups funktionieren wie eine Firewall und kontrollieren welcher Netzwerkverkehr zu den EC2 Nodes erlaubt ist. Für den RKE2 Cluster wurden folgende Ports freigegeben:
+
+| Port  | Protokoll | Zweck                                   |
+| ----- | --------- | --------------------------------------- |
+| 22    | TCP       | SSH Zugriff                             |
+| 6443  | TCP       | Kubernetes API                          |
+| 9345  | TCP       | RKE2 Node Registration                  |
+| 10250 | TCP       | Kubelet                                 |
+| 8472  | UDP       | Flannel VXLAN (Netzwerk zwischen Nodes) |
+| 80    | TCP       | HTTP Ingress                            |
+| 443   | TCP       | HTTPS Ingress                           |
+
+Ausgehender Traffic ist komplett erlaubt (`0.0.0.0/0`).
+
+![security_group](media/security_group.png)
+
 ### Wichtige Befehle
 
 | Befehl              | Beschreibung                                   |
