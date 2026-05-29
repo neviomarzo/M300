@@ -143,3 +143,13 @@ resource "aws_security_group" "rke2" {
     Project = var.project_name
   }
 }
+
+resource "aws_key_pair" "m300" {
+  key_name   = "${var.project_name}-key"
+  public_key = file("~/.ssh/m300.pub")
+
+  tags = {
+    Name    = "${var.project_name}-key"
+    Project = var.project_name
+  }
+}

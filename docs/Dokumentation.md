@@ -20,6 +20,7 @@
     - [Dateistruktur](#dateistruktur)
     - [Netzwerk (VPC)](#netzwerk-vpc)
     - [Security Groups](#security-groups)
+    - [SSH Key Pair](#ssh-key-pair)
     - [Wichtige Befehle](#wichtige-befehle)
 
 
@@ -172,12 +173,12 @@ Terraform wird verwendet um die gesamte AWS-Infrastruktur automatisiert und repr
 
 ### Dateistruktur
 
-| Datei                 | Beschreibung                                      |
-| --------------------- | ------------------------------------------------- |
-| `main.tf`             | Hauptkonfiguration, definiert alle AWS-Ressourcen |
-| `variables.tf`        | Variablen (Region, Projektname, etc.)             |
-| `outputs.tf`          | Ausgaben nach dem Apply (VPC-ID, Subnet-ID, etc.) |
-| `.terraform.lock.hcl` | Lockfile, fixiert die Provider-Version            |
+| Datei                                                   | Beschreibung                                      |
+| ------------------------------------------------------- | ------------------------------------------------- |
+| [main.tf](../terraform/main.tf)                         | Hauptkonfiguration, definiert alle AWS-Ressourcen |
+| [variables.tf](../terraform/variables.tf)               | Variablen (Region, Projektname, etc.)             |
+| [outputs.tf](../terraform/outputs.tf)                   | Ausgaben nach dem Apply (VPC-ID, Subnet-ID, etc.) |
+| [.terraform.lock.hcl](../terraform/.terraform.lock.hcl) | Lockfile, fixiert die Provider-Version            |
 
 ### Netzwerk (VPC)
 
@@ -213,6 +214,12 @@ Security Groups funktionieren wie eine Firewall und kontrollieren welcher Netzwe
 Ausgehender Traffic ist komplett erlaubt (`0.0.0.0/0`).
 
 ![security_group](media/security_group.png)
+
+### SSH Key Pair
+
+Für den SSH-Zugriff auf die EC2 Nodes wird ein Key Pair benötigt. Der öffentliche Schlüssel (`m300.pub`) wird via Terraform in AWS importiert und den EC2 Instanzen zugewiesen.
+
+![key_pair](media/key_pair.png)
 
 ### Wichtige Befehle
 
