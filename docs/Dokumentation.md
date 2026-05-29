@@ -1,4 +1,6 @@
-# Projektkonzept – Kubernetes-Cluster mit CI/CD auf AWS
+# M300 Dokumentation
+
+## Projektkonzept – Kubernetes-Cluster mit CI/CD auf AWS
 
 **Modul:** Cloud & Infrastruktur (V2)
 **Autor:** Nevio
@@ -6,7 +8,7 @@
 
 ---
 
-## 1. Projektbeschreibung
+### 1. Projektbeschreibung
 
 Ziel dieses Projekts ist der Aufbau eines produktionsnahen Kubernetes-Clusters auf AWS EC2 mit RKE2, inklusive automatisierter Deployment-Pipeline (CI/CD via GitHub Actions), Monitoring-Stack sowie mehreren deployte Applikationen in getrennten Namespaces.
 
@@ -14,7 +16,7 @@ Die gesamte Infrastruktur wird mittels **Terraform** provisioniert. Änderungen 
 
 ---
 
-## 2. Technologien & Tools
+### 2. Technologien & Tools
 
 | Bereich                       | Technologie                      |
 | ----------------------------- | -------------------------------- |
@@ -30,16 +32,16 @@ Die gesamte Infrastruktur wird mittels **Terraform** provisioniert. Änderungen 
 
 ---
 
-## 3. Architektur
+### 3. Architektur
 
-### 3.1 Cluster-Aufbau
+#### 3.1 Cluster-Aufbau
 
 - **1x Master-Node** (t3.medium) – RKE2 Control Plane
 - **2x Worker-Node** (t3.medium) – Workload-Ausführung
 - Alle Nodes in einer AWS VPC mit privaten/öffentlichen Subnetzen
 - Load Balancer (ALB) für externen Zugriff
 
-### 3.2 Applikationen
+#### 3.2 Applikationen
 
 | App        | Typ                     | Namespace     | Beschreibung                               |
 | ---------- | ----------------------- | ------------- | ------------------------------------------ |
@@ -49,7 +51,7 @@ Die gesamte Infrastruktur wird mittels **Terraform** provisioniert. Änderungen 
 
 Jede Applikation läuft in einem **eigenen Namespace** und ist über eine eigene Route via Nginx Ingress erreichbar.
 
-### 3.3 CI/CD-Pipeline (GitHub Actions)
+#### 3.3 CI/CD-Pipeline (GitHub Actions)
 
 ```
 Code Push → GitHub Actions → Docker Image Build → Push zu GHCR → kubectl apply auf RKE2-Cluster → Rolling Update
@@ -57,9 +59,9 @@ Code Push → GitHub Actions → Docker Image Build → Push zu GHCR → kubectl
 
 ---
 
-## 4. Anforderungen
+### 4. Anforderungen
 
-### 4.1 Funktionale Anforderungen
+#### 4.1 Funktionale Anforderungen
 
 - RKE2 Multi-Node Cluster läuft stabil auf AWS EC2
 - Alle drei Applikationen sind extern erreichbar (via Ingress)
@@ -67,7 +69,7 @@ Code Push → GitHub Actions → Docker Image Build → Push zu GHCR → kubectl
 - Rolling Updates funktionieren ohne Downtime
 - Monitoring zeigt Cluster-Metriken in Grafana Dashboard
 
-### 4.2 Nicht-funktionale Anforderungen
+#### 4.2 Nicht-funktionale Anforderungen
 
 - **Sicherheit:** Secrets werden nicht im Code gespeichert (Kubernetes Secrets / GitHub Secrets)
 - **Kosten:** AWS-Budget unter 50 USD gehalten
@@ -76,7 +78,7 @@ Code Push → GitHub Actions → Docker Image Build → Push zu GHCR → kubectl
 
 ---
 
-## 5. Bezug zur Kompetenzmatrix
+### 5. Bezug zur Kompetenzmatrix
 
 | Kriterium                                                   | Umsetzung im Projekt                                                                                                                                        |
 | ----------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -91,7 +93,7 @@ Code Push → GitHub Actions → Docker Image Build → Push zu GHCR → kubectl
 
 ---
 
-## 6. Grober Zeitplan (10 × 4 Lektionen)
+### 6. Grober Zeitplan (10 × 4 Lektionen)
 
 | Woche | Thema                                                              |
 | ----- | ------------------------------------------------------------------ |
@@ -108,7 +110,7 @@ Code Push → GitHub Actions → Docker Image Build → Push zu GHCR → kubectl
 
 ---
 
-## 7. Kostenkalkulation AWS
+### 7. Kostenkalkulation AWS
 
 | Ressource           | Typ         | Kosten/h | ~100h Laufzeit |
 | ------------------- | ----------- | -------- | -------------- |
@@ -124,7 +126,7 @@ Budget verbleibt: ~$22 Puffer für unvorhergesehene Kosten.
 
 ---
 
-## 8. Risiken
+### 8. Risiken
 
 | Risiko                       | Wahrscheinlichkeit | Massnahme                                                      |
 | ---------------------------- | ------------------ | -------------------------------------------------------------- |
@@ -135,8 +137,47 @@ Budget verbleibt: ~$22 Puffer für unvorhergesehene Kosten.
 
 ---
 
-## 9. Arbeitstechnik
+### 9. Arbeitstechnik
 
 - **Wöchentliches Lernjournal:** Jede Woche wird dokumentiert was gelernt, was funktioniert hat und was nicht
 - **Outcome-Dokumentation:** Laufend in GitHub Repository (`/docs`-Ordner)
 - **Reflexion:** Am Ende jeder Woche kurze Reflexion zum eigenen Vorgehen
+
+## Terraform – Infrastructure as code (IaC)
+
+Terraform wird verwendet um die gesamte AWS-Infrastruktur automatisiert und reproduzierbar zu provisionieren. Anstatt Ressourcen manuell in der AWS Console zu erstellen, wird die Infrastruktur deklarativ im Code beschrieben.
+
+### Dateistruktur
+
+| Datei                 | Beschreibung                                      |
+| --------------------- | ------------------------------------------------- |
+| `main.tf`             | Hauptkonfiguration, definiert alle AWS-Ressourcen |
+| `variables.tf`        | Variablen (Region, Projektname, etc.)             |
+| `outputs.tf`          | Ausgaben nach dem Apply (VPC-ID, Subnet-ID, etc.) |
+| `.terraform.lock.hcl` | Lockfile, fixiert die Provider-Version            |
+
+### Netzwerk (VPC)
+
+Folgende Ressourcen wurden mit Terraform in AWS erstellt:
+
+- **VPC** (`10.0.0.0/16`) – privates Netzwerk für den gesamten Cluster
+- **Public Subnet** (`10.0.1.0/24`) – Subnetz für die EC2 Nodes
+- **Internet Gateway** – verbindet die VPC mit dem Internet
+- **Route Table** – leitet Traffic vom Subnetz zum Internet Gateway
+
+Hier sieht man den Output des Terraform apply:
+
+![terraform_apply](media/terraform_apply.png)
+
+und hier noch in AWS die der erstellte VPC
+
+![VPC](media/VPC.png)
+
+### Wichtige Befehle
+
+| Befehl              | Beschreibung                                   |
+| ------------------- | ---------------------------------------------- |
+| `terraform init`    | Provider herunterladen, Projekt initialisieren |
+| `terraform plan`    | Vorschau anzeigen was erstellt/geändert wird   |
+| `terraform apply`   | Infrastruktur in AWS erstellen                 |
+| `terraform destroy` | Alle erstellten Ressourcen löschen             |
