@@ -53,3 +53,51 @@ Terraform initialisiert und erste Konfiguration geschrieben (VPC, Subnetz, Inter
 
 Was gelernt:
 Terraform funktioniert mit Providern die aus der Registry geladen werden. Infrastruktur wird deklarativ beschrieben — man definiert den Zielzustand, Terraform kümmert sich ums Wie.
+
+Hier der Eintrag für Woche 2:
+
+---
+
+## Woche 2 – 29.05.2026
+
+---
+
+### Tagesziele
+
+- [x] Terraform: VPC, EC2-Instanzen, Security Groups provisionieren
+
+---
+
+### Resultate
+
+- VPC, Subnetz, Internet Gateway und Route Table via Terraform erstellt
+- Security Groups für RKE2 Cluster konfiguriert (SSH, Kubernetes API, Ingress, etc.)
+- SSH Key Pair in AWS importiert
+- EC2 Instanzen provisioniert (1 Master, 2 Worker, Ubuntu 22.04, t3.medium)
+
+---
+
+### Probleme & Reflexion
+
+| Problem                          | Ursache                                                           | Lösung / Reflexion                                 |
+| -------------------------------- | ----------------------------------------------------------------- | -------------------------------------------------- |
+| `terraform apply` mit 403 Fehler | AWS Region falsch konfiguriert (`eu-central-1` statt `us-east-1`) | Region in `variables.tf` auf `us-east-1` angepasst |
+
+---
+
+### Ressourcen
+
+| Ressource                   | Link                                                                |
+| --------------------------- | ------------------------------------------------------------------- |
+| Terraform AWS Provider Doku | <https://registry.terraform.io/providers/hashicorp/aws/latest/docs> |
+| RKE2 Ports Doku             | <https://docs.rke2.io/install/requirements#networking>              |
+
+---
+
+### Praktische Übung
+
+Was gemacht:
+Vollständige AWS Infrastruktur via Terraform provisioniert — VPC, Subnetz, Internet Gateway, Route Table, Security Groups und 3 EC2 Instanzen.
+
+Was gelernt:
+Terraform erstellt Ressourcen automatisch in der richtigen Reihenfolge basierend auf Abhängigkeiten. Mit `count` können mehrere identische Ressourcen mit einer einzigen Definition erstellt werden.
