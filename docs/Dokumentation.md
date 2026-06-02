@@ -16,6 +16,7 @@
     - [7. Kostenkalkulation AWS](#7-kostenkalkulation-aws)
     - [8. Risiken](#8-risiken)
     - [9. Arbeitstechnik](#9-arbeitstechnik)
+  - [Netzwerkdiagramm](#netzwerkdiagramm)
   - [Terraform – Infrastructure as code (IaC)](#terraform--infrastructure-as-code-iac)
     - [Dateistruktur](#dateistruktur)
     - [Netzwerk (VPC)](#netzwerk-vpc)
@@ -27,7 +28,6 @@
     - [RKE2 (via Ansible)](#rke2-via-ansible)
     - [Rancher (via Helm)](#rancher-via-helm)
     - [Cluster Status](#cluster-status)
-
 
 ## Projektkonzept – Kubernetes-Cluster mit CI/CD auf AWS
 
@@ -171,6 +171,54 @@ Budget verbleibt: ~$22 Puffer für unvorhergesehene Kosten.
 - **Wöchentliches Lernjournal:** Jede Woche wird dokumentiert was gelernt, was funktioniert hat und was nicht
 - **Outcome-Dokumentation:** Laufend in GitHub Repository (`/docs`-Ordner)
 - **Reflexion:** Am Ende jeder Woche kurze Reflexion zum eigenen Vorgehen
+
+## Netzwerkdiagramm
+
+```mermaid
+graph TD
+    Internet([🌐 Internet])
+
+    subgraph AWS["☁️ AWS us-east-1"]
+        IGW[Internet Gateway]
+        RT[Route Table\n0.0.0.0/0 → IGW]
+
+        subgraph VPC["VPC 10.0.0.0/16"]
+            subgraph Subnet["Public Subnet 10.0.1.0/24 (us-east-1a)"]
+                SG["🔒 Security Group\nPorts: 22, 80, 443, 6443, 9345, 10250, 8472"]
+
+                subgraph Cluster["RKE2 Cluster"]
+                    MASTER["🖥️ m300-master\nt3.medium | Ubuntu 22.04\nControl Plane"]
+                    WORKER1["🖥️ m300-worker-1\nt3.medium | Ubuntu 22.04\nWorker"]
+                    WORKER2["🖥️ m300-worker-2\nt3.medium | Ubuntu 22.04\nWorker"]
+                end
+
+                subgraph Apps["Applikationen"]
+                    NS1["📦 app-demo\nPython Flask"]
+                    NS2["📦 app-podinfo\nPodinfo"]
+                    NS3["📦 monitoring\nPrometheus + Grafana"]
+                end
+
+                INGRESS["⚙️ Nginx Ingress Controller"]
+            end
+        end
+    end
+
+    RANCHER["🐄 rancher.sybhad.ch"]
+
+    Internet -->|HTTPS| IGW
+    IGW --> RT
+    RT --> SG
+    SG --> INGRESS
+    INGRESS -->|/demo| NS1
+    INGRESS -->|/podinfo| NS2
+    INGRESS -->|/monitoring| NS3
+    MASTER -->|verwaltet| WORKER1
+    MASTER -->|verwaltet| WORKER2
+    WORKER1 -->|hostet| Apps
+    WORKER2 -->|hostet| Apps
+    Internet -->|HTTPS| RANCHER
+    RANCHER -->|verwaltet| Cluster
+```
 
 ## Terraform – Infrastructure as code (IaC)
 
