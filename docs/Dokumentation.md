@@ -23,6 +23,10 @@
     - [SSH Key Pair](#ssh-key-pair)
     - [EC2 Instanzen](#ec2-instanzen)
     - [Wichtige Befehle](#wichtige-befehle)
+  - [RKE2 \& Rancher Installation](#rke2--rancher-installation)
+    - [RKE2 (via Ansible)](#rke2-via-ansible)
+    - [Rancher (via Helm)](#rancher-via-helm)
+    - [Cluster Status](#cluster-status)
 
 
 ## Projektkonzept – Kubernetes-Cluster mit CI/CD auf AWS
@@ -242,3 +246,60 @@ Die drei EC2 Instanzen (1 Master, 2 Worker) werden via Terraform provisioniert. 
 | `terraform plan`    | Vorschau anzeigen was erstellt/geändert wird   |
 | `terraform apply`   | Infrastruktur in AWS erstellen                 |
 | `terraform destroy` | Alle erstellten Ressourcen löschen             |
+
+## RKE2 & Rancher Installation
+
+### RKE2 (via Ansible)
+
+RKE2 wurde mit dem offiziellen Ansible Playbook von Rancher Government Solutions installiert. Das Playbook wurde lokal vom Laptop aus ausgeführt und übernimmt automatisch die Installation auf allen Nodes sowie das Joinen der Worker Nodes in den Cluster.
+
+Das Repo kann einfach geklont werden und dass inventory mit den richtigen Werten bearbeitet werden. Das sieht dann etwa so aus:
+
+``` yaml
+---
+rke2_cluster:
+  children:
+    rke2_servers:
+      hosts:
+        m300-master:
+          ansible_host: 54.198.56.112
+    rke2_agents:
+      hosts:
+        m300-worker-1:
+          ansible_host: 54.242.40.224
+        m300-worker-2:
+          ansible_host: 98.80.121.5
+```
+
+- **Playbook:** <https://github.com/ranchergovernment/rke2-ansible>
+- **Version:** aktuellste stabile Version
+
+![ansible_run](media/ansible_run.png)
+
+### Rancher (via Helm)
+
+Rancher wurde nach der offiziellen Installationsanleitung via Helm auf dem RKE2 Cluster installiert. Das TLS-Zertifikat wird automatisch via Let's Encrypt ausgestellt und erneuert. Ich verwende dabei meine Domain sybhad.ch
+
+Dafür muss nur ein neuer Namespace erstellt werden und Rancher kann dann einfach mit helm installiert werden. Dazu habe ich diesen Befehl verwendet:
+
+``` bash
+helm install rancher rancher-stable/rancher \
+  --namespace cattle-system \
+  --set hostname=rancher.sybhad.ch \
+  --set bootstrapPassword=admin \
+  --set ingress.tls.source=letsEncrypt \
+  --set letsEncrypt.email=nevio.marzo@edu.tbz.ch \
+  --set letsEncrypt.ingress.class=nginx
+```
+
+- **URL:** <https://rancher.sybhad.ch>
+- **Dokumentation:** <https://ranchermanager.docs.rancher.com/getting-started/installation-and-upgrade/install-upgrade-on-a-kubernetes-cluster>
+- **Version:** aktuellste stabile Version
+
+![rancher_dashboard](media/rancher_dashboard.png)
+
+### Cluster Status
+
+Nach der Installation sind alle Nodes als `Ready` registriert:
+
+![kubectl_get_nodes](media/kubectl_get_nodes.png)
