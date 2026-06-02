@@ -101,3 +101,50 @@ Vollständige AWS Infrastruktur via Terraform provisioniert — VPC, Subnetz, In
 
 Was gelernt:
 Terraform erstellt Ressourcen automatisch in der richtigen Reihenfolge basierend auf Abhängigkeiten. Mit `count` können mehrere identische Ressourcen mit einer einzigen Definition erstellt werden.
+
+---
+
+## Arbeit Zuhause – 02.06.2026
+
+---
+
+### Tagesziele
+
+- [x] RKE2 Cluster installieren und konfigurieren
+- [x] Rancher installieren
+
+---
+
+### Resultate
+
+- RKE2 Multi-Node Cluster via Ansible Playbook (`ranchergovernment/rke2-ansible`) installiert
+- Alle 3 Nodes als `Ready` registriert
+- Rancher via Helm installiert, erreichbar unter <https://rancher.sybhad.ch>
+- TLS-Zertifikat automatisch via Let's Encrypt ausgestellt
+
+---
+
+### Probleme & Reflexion
+
+| Problem | Ursache | Lösung / Reflexion         |
+| ------- | ------- | -------------------------- |
+| –       | –       | Keine Probleme aufgetreten |
+
+---
+
+### Ressourcen
+
+| Ressource                 | Link                                                                                                                       |
+| ------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| RKE2 Ansible Playbook     | <https://github.com/ranchergovernment/rke2-ansible>                                                                        |
+| Rancher Installationsdoku | <https://ranchermanager.docs.rancher.com/getting-started/installation-and-upgrade/install-upgrade-on-a-kubernetes-cluster> |
+
+---
+
+### Praktische Übung
+
+Was gemacht:
+RKE2 Cluster mit Ansible aufgesetzt und Rancher installiert. Alles ausserhalb der Schulzeit zuhause durchgeführt.
+
+Was gelernt:
+Ansible Playbooks ermöglichen eine automatisierte und reproduzierbare Installation auf mehreren Nodes gleichzeitig. Rancher bietet eine übersichtliche UI zur Verwaltung des Clusters und wird mit Let's Encrypt automatisch mit einem gültigen TLS-Zertifikat gesichert.
