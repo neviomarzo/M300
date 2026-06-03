@@ -178,46 +178,58 @@ Budget verbleibt: ~$22 Puffer für unvorhergesehene Kosten.
 graph TD
     Internet([🌐 Internet])
 
-    subgraph AWS["☁️ AWS us-east-1"]
-        IGW[Internet Gateway]
-        RT[Route Table\n0.0.0.0/0 → IGW]
+subgraph AWS["☁️ AWS us-east-1"]
+IGW[Internet Gateway]
+RT[Route Table\n0.0.0.0/0 → IGW]
+subgraph VPC["VPC 10.0.0.0/16"]
+subgraph Subnet["Public Subnet 10.0.1.0/24 (us-east-1a)"]
+SG["🔒 Security Group\nPorts: 22, 80, 443, 6443, 9345, 10250, 8472"]
+subgraph Cluster["RKE2 Cluster"]
+MASTER["🖥️ m300-master\nt3.medium | Ubuntu 22.04\nControl Plane"]
+WORKER1["🖥️ m300-worker-1\nt3.medium | Ubuntu 22.04\nWorker"]
+WORKER2["🖥️ m300-worker-2\nt3.medium | Ubuntu 22.04\nWorker"]
+end
+subgraph Apps["Applikationen"]
+NS1["📦 app-demo\nPython Flask"]
+NS2["📦 app-podinfo\nPodinfo"]
+NS3["📦 monitoring\nPrometheus + Grafana"]
+end
+INGRESS["⚙️ Nginx Ingress Controller"]
+end
+end
+end
+RANCHER["🐄 rancher.sybhad.ch"]
 
-        subgraph VPC["VPC 10.0.0.0/16"]
-            subgraph Subnet["Public Subnet 10.0.1.0/24 (us-east-1a)"]
-                SG["🔒 Security Group\nPorts: 22, 80, 443, 6443, 9345, 10250, 8472"]
+Internet -->|HTTPS| IGW
+IGW --> RT
+RT --> SG
+SG --> INGRESS
+INGRESS -->|/demo| NS1
+INGRESS -->|/podinfo| NS2
+INGRESS -->|/monitoring| NS3
+MASTER -->|verwaltet| WORKER1
+MASTER -->|verwaltet| WORKER2
+WORKER1 -->|hostet| Apps
+WORKER2 -->|hostet| Apps
+Internet -->|HTTPS| RANCHER
+RANCHER -->|verwaltet| Cluster
 
-                subgraph Cluster["RKE2 Cluster"]
-                    MASTER["🖥️ m300-master\nt3.medium | Ubuntu 22.04\nControl Plane"]
-                    WORKER1["🖥️ m300-worker-1\nt3.medium | Ubuntu 22.04\nWorker"]
-                    WORKER2["🖥️ m300-worker-2\nt3.medium | Ubuntu 22.04\nWorker"]
-                end
-
-                subgraph Apps["Applikationen"]
-                    NS1["📦 app-demo\nPython Flask"]
-                    NS2["📦 app-podinfo\nPodinfo"]
-                    NS3["📦 monitoring\nPrometheus + Grafana"]
-                end
-
-                INGRESS["⚙️ Nginx Ingress Controller"]
-            end
-        end
-    end
-
-    RANCHER["🐄 rancher.sybhad.ch"]
-
-    Internet -->|HTTPS| IGW
-    IGW --> RT
-    RT --> SG
-    SG --> INGRESS
-    INGRESS -->|/demo| NS1
-    INGRESS -->|/podinfo| NS2
-    INGRESS -->|/monitoring| NS3
-    MASTER -->|verwaltet| WORKER1
-    MASTER -->|verwaltet| WORKER2
-    WORKER1 -->|hostet| Apps
-    WORKER2 -->|hostet| Apps
-    Internet -->|HTTPS| RANCHER
-    RANCHER -->|verwaltet| Cluster
+style AWS fill:#FF9900,stroke:#FF9900,color:#000,fill-opacity:0.1
+style VPC fill:#147EBA,stroke:#147EBA,fill-opacity:0.1
+style Subnet fill:#2ECC71,stroke:#2ECC71,fill-opacity:0.1
+style Cluster fill:#0075A8,stroke:#0075A8,fill-opacity:0.15
+style Apps fill:#9B59B6,stroke:#9B59B6,fill-opacity:0.15
+style IGW fill:#FF9900,stroke:#FF9900,color:#000
+style RT fill:#FF9900,stroke:#FF9900,color:#000
+style SG fill:#E74C3C,stroke:#E74C3C,color:#fff
+style INGRESS fill:#27AE60,stroke:#27AE60,color:#fff
+style MASTER fill:#0075A8,stroke:#0075A8,color:#fff
+style WORKER1 fill:#0075A8,stroke:#0075A8,color:#fff
+style WORKER2 fill:#0075A8,stroke:#0075A8,color:#fff
+style NS1 fill:#9B59B6,stroke:#9B59B6,color:#fff
+style NS2 fill:#9B59B6,stroke:#9B59B6,color:#fff
+style NS3 fill:#9B59B6,stroke:#9B59B6,color:#fff
+style RANCHER fill:#0075A8,stroke:#0075A8,color:#fff
 ```
 
 ## Terraform – Infrastructure as code (IaC)
