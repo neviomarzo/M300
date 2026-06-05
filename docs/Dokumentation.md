@@ -28,6 +28,10 @@
     - [RKE2 (via Ansible)](#rke2-via-ansible)
     - [Rancher (via Helm)](#rancher-via-helm)
     - [Cluster Status](#cluster-status)
+  - [Cert-Manager \& Let's Encrypt](#cert-manager--lets-encrypt)
+    - [Installation](#installation)
+    - [ClusterIssuer](#clusterissuer)
+    - [Funktionsweise](#funktionsweise)
 
 ## Projektkonzept – Kubernetes-Cluster mit CI/CD auf AWS
 
@@ -363,3 +367,41 @@ helm install rancher rancher-stable/rancher \
 Nach der Installation sind alle Nodes als `Ready` registriert:
 
 ![kubectl_get_nodes](media/kubectl_get_nodes.png)
+
+## Cert-Manager & Let's Encrypt
+
+Cert-Manager ist ein Kubernetes-nativer Zertifikatsmanager. Er überwacht Ingress-Ressourcen und beantragt automatisch TLS-Zertifikate bei Let's Encrypt, ohne dass manuell etwas erneuert oder konfiguriert werden muss.
+
+### Installation
+
+Cert-Manager wurde via Helm im Namespace `cert-manager` installiert:
+
+```bash
+helm repo add jetstack https://charts.jetstack.io
+helm repo update
+helm install cert-manager jetstack/cert-manager \
+  --namespace cert-manager \
+  --create-namespace \
+  --set crds.enabled=true
+```
+
+### ClusterIssuer
+
+Der ClusterIssuer ist eine clusterweite Ressource die definiert, wie und bei welcher Stelle Zertifikate beantragt werden. In diesem Projekt wird der offizielle Let's Encrypt Produktions-Server verwendet. Die Validierung erfolgt via HTTP01-Challenge. Let's Encrypt ruft eine temporäre URL auf dem Cluster ab um zu bestätigen dass die Domain tatsächlich auf diesen Server zeigt. Der Nginx Ingress Controller übernimmt dabei die Beantwortung dieser Challenge automatisch.
+
+[clusterissuer.yaml](../kubernetes/clusterissuer.yaml)
+
+Hier sieht man noch die Ressource in Rancher
+
+![clusterissuer](media/clusterissuer.png)
+
+### Funktionsweise
+
+Sobald ein Ingress mit der Annotation `cert-manager.io/cluster-issuer: letsencrypt-prod` erstellt wird, läuft folgender Prozess ab:
+
+1. Cert-Manager erkennt den neuen Ingress
+2. Ein Zertifikatsantrag wird bei Let's Encrypt gestellt
+3. Let's Encrypt führt die HTTP01-Challenge durch
+4. Bei Erfolg wird das Zertifikat ausgestellt und als Kubernetes Secret gespeichert
+5. Der Ingress verwendet das Secret automatisch für HTTPS
+6. Cert-Manager erneuert das Zertifikat automatisch vor Ablauf
