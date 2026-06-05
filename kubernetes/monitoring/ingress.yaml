@@ -1,0 +1,26 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: kube-prometheus-stack-grafana
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+  labels:
+    {}
+  namespace: monitoring
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: grafana.sybhad.ch
+      http:
+        paths:
+          - backend:
+              service:
+                port:
+                  number: 80
+                name: kube-prometheus-stack-grafana
+            path: /
+            pathType: Prefix
+  tls:
+    - hosts:
+        - grafana.sybhad.ch
+      secretName: grafana-tls
