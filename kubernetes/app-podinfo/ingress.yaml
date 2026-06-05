@@ -1,0 +1,26 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: podinfo
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+  labels:
+    {}
+  namespace: app-podinfo
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: podinfo.sybhad.ch
+      http:
+        paths:
+          - backend:
+              service:
+                port:
+                  number: 9898
+                name: podinfo
+            path: /
+            pathType: Prefix
+  tls:
+    - hosts:
+        - podinfo.sybhad.ch
+      secretName: podinfo-tls
