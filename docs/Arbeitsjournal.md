@@ -148,3 +148,55 @@ RKE2 Cluster mit Ansible aufgesetzt und Rancher installiert. Alles ausserhalb de
 
 Was gelernt:
 Ansible Playbooks ermöglichen eine automatisierte und reproduzierbare Installation auf mehreren Nodes gleichzeitig. Rancher bietet eine übersichtliche UI zur Verwaltung des Clusters und wird mit Let's Encrypt automatisch mit einem gültigen TLS-Zertifikat gesichert.
+
+Hier der Eintrag:
+
+---
+
+## Woche 3 – 05.06.2026
+
+---
+
+### Tagesziele
+
+- [x] Cert-Manager und ClusterIssuer konfigurieren
+- [x] Podinfo deployen und Ingress mit Let's Encrypt einrichten
+- [x] Prometheus + Grafana (kube-prometheus-stack) installieren
+
+---
+
+### Resultate
+
+- Cert-Manager via Helm installiert, ClusterIssuer `letsencrypt-prod` mit HTTP01-Challenge erstellt
+- Podinfo via Rancher im Namespace `app-podinfo` deployed
+- Ingress für Podinfo erstellt, TLS-Zertifikat automatisch via Let's Encrypt ausgestellt
+- Podinfo erreichbar unter <https://podinfo.sybhad.ch>
+- kube-prometheus-stack via Rancher im Namespace `monitoring` installiert
+
+---
+
+### Probleme & Reflexion
+
+| Problem | Ursache | Lösung / Reflexion         |
+| ------- | ------- | -------------------------- |
+| –       | –       | Keine Probleme aufgetreten |
+
+---
+
+### Ressourcen
+
+| Ressource             | Link                                                |
+| --------------------- | --------------------------------------------------- |
+| Cert-Manager Doku     | <https://cert-manager.io/docs>                        |
+| Podinfo Helm Chart    | <https://stefanprodan.github.io/podinfo>              |
+| kube-prometheus-stack | <https://github.com/prometheus-community/helm-charts> |
+
+---
+
+### Praktische Übung
+
+Was gemacht:
+Cert-Manager installiert und ClusterIssuer für Let's Encrypt konfiguriert. Podinfo via Rancher deployed und Ingress mit automatischem TLS erstellt. Monitoring-Stack via Rancher installiert.
+
+Was gelernt:
+Cert-Manager nimmt einem die manuelle Zertifikatsverwaltung komplett ab — sobald der Ingress mit der richtigen Annotation erstellt wird, läuft alles automatisch. Der kube-prometheus-stack bündelt Prometheus, Grafana und Alertmanager in einem einzigen Helm Chart.
