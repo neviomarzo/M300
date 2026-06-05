@@ -32,6 +32,10 @@
     - [Installation](#installation)
     - [ClusterIssuer](#clusterissuer)
     - [Funktionsweise](#funktionsweise)
+  - [Podinfo](#podinfo)
+    - [Installation](#installation-1)
+    - [Ingress](#ingress)
+    - [Erreichbarkeit](#erreichbarkeit)
 
 ## Projektkonzept – Kubernetes-Cluster mit CI/CD auf AWS
 
@@ -405,3 +409,33 @@ Sobald ein Ingress mit der Annotation `cert-manager.io/cluster-issuer: letsencry
 4. Bei Erfolg wird das Zertifikat ausgestellt und als Kubernetes Secret gespeichert
 5. Der Ingress verwendet das Secret automatisch für HTTPS
 6. Cert-Manager erneuert das Zertifikat automatisch vor Ablauf
+
+## Podinfo
+
+Podinfo ist eine Open-Source Demo-App die speziell für Kubernetes entwickelt wurde. Sie zeigt Cluster-Infos, Pod-Details, den Hostnamen des antwortenden Pods sowie Kubernetes-Laufzeitinformationen. Zusätzlich stellt sie Prometheus-Metriken unter `/metrics` und Health-Check Endpoints unter `/healthz` und `/readyz` bereit. Für dieses Projekt dient Podinfo als zweite Applikation neben der eigenen Flask Demo-App um die Namespace-Trennung und den Ingress-Routing zu demonstrieren.
+
+### Installation
+
+Podinfo wurde via Rancher unter **Apps** → **Charts** im Namespace `app-podinfo` installiert. Rancher lädt das Helm Chart direkt aus dem offiziellen Podinfo Repository und erstellt automatisch alle nötigen Kubernetes-Ressourcen (Deployment, Service, HorizontalPodAutoscaler).
+
+![rancher_apps](media/rancher_apps.png)
+
+### Ingress
+
+Nach der Installation wurde der Ingress manuell via `kubectl apply` erstellt. Ohne Ingress wäre Podinfo nur clusterweit erreichbar. Der Ingress macht die App über eine öffentliche URL zugänglich.
+
+Die Annotation `cert-manager.io/cluster-issuer: letsencrypt-prod` weist Cert-Manager an, automatisch ein TLS-Zertifikat bei Let's Encrypt zu beantragen. Cert-Manager erstellt dazu eine temporäre HTTP01-Challenge über den Nginx Ingress Controller, Let's Encrypt verifiziert die Domain und stellt das Zertifikat aus. Das Zertifikat wird als Kubernetes Secret `podinfo-tls` gespeichert und vom Ingress automatisch für HTTPS verwendet. Die Erneuerung erfolgt ebenfalls automatisch vor Ablauf.
+
+[podinfo_ingress.yaml](../kubernetes/app-podinfo/ingress.yaml)
+
+Hier sieht man noch die Ressource in Rancher.
+
+![podinfo_ingress](media/podinfo_ingress.png)
+
+### Erreichbarkeit
+
+| URL                         | Protokoll             |
+| --------------------------- | --------------------- |
+| <https://podinfo.sybhad.ch> | HTTPS (Let's Encrypt) |
+
+![podinfo](media/podinfo.png)
