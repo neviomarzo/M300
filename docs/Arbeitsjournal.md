@@ -200,3 +200,53 @@ Cert-Manager installiert und ClusterIssuer für Let's Encrypt konfiguriert. Podi
 
 Was gelernt:
 Cert-Manager nimmt einem die manuelle Zertifikatsverwaltung komplett ab — sobald der Ingress mit der richtigen Annotation erstellt wird, läuft alles automatisch. Der kube-prometheus-stack bündelt Prometheus, Grafana und Alertmanager in einem einzigen Helm Chart.
+
+---
+
+## Woche 4 – 12.06.2026
+
+---
+
+### Tagesziele
+
+- [x] Flask Demo-App entwickeln und deployen
+- [x] CI/CD Pipeline mit GitHub Actions aufbauen
+
+---
+
+### Resultate
+
+- Flask Demo-App entwickelt — zeigt Pod-Name, Node, Namespace und Version
+- Docker Image via GitHub Actions automatisch gebaut und zu GHCR gepusht
+- Kubernetes Manifests erstellt (Deployment, Service, Ingress)
+- CI/CD Pipeline deployed automatisch bei Push auf `main`-Branch
+- Demo-App erreichbar unter <https://demo.sybhad.ch>
+- Grafana Ingress erstellt, erreichbar unter <https://grafana.sybhad.ch>
+
+---
+
+### Probleme & Reflexion
+
+| Problem                                          | Ursache                                  | Lösung / Reflexion                                 |
+| ------------------------------------------------ | ---------------------------------------- | -------------------------------------------------- |
+| Node.js 20 Deprecation Warning in GitHub Actions | Actions verwenden intern noch Node.js 20 | `FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true` gesetzt |
+
+---
+
+### Ressourcen
+
+| Ressource                | Link                                                                                                              |
+| ------------------------ | ----------------------------------------------------------------------------------------------------------------- |
+| GitHub Actions Doku      | <https://docs.github.com/en/actions>                                                                              |
+| GHCR Doku                | <https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-container-registry> |
+| docker/build-push-action | <https://github.com/docker/build-push-action>                                                                     |
+
+---
+
+### Praktische Übung
+
+Was gemacht:
+Flask Demo-App entwickelt die Kubernetes-Laufzeitinformationen anzeigt. GitHub Actions Pipeline aufgebaut die das Docker Image automatisch baut, zu GHCR pusht und auf den Cluster deployed.
+
+Was gelernt:
+GitHub Actions ermöglicht eine vollständig automatisierte CI/CD Pipeline. Mit `GITHUB_TOKEN` kann direkt zu GHCR gepusht werden ohne zusätzliche Credentials. Kubernetes Rolling Updates laufen automatisch ohne Downtime wenn ein neues Image deployed wird.
