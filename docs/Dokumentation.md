@@ -574,7 +574,7 @@ Die Pipeline besteht aus zwei aufeinanderfolgenden Jobs:
 - `kubectl apply` auf die Kubernetes Manifests
 - `kubectl rollout restart` für Rolling Update
 
-[demo-app.yaml](../.github/workflows/demo-app.yaml)
+[Pipeline File](../.github/workflows/demo-app.yaml)
 
 ### Secrets
 
