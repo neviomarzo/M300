@@ -42,6 +42,17 @@
     - [Ingress](#ingress-1)
     - [Erreichbarkeit](#erreichbarkeit-1)
     - [Dashboards](#dashboards)
+  - [Demo App](#demo-app)
+    - [Applikation](#applikation)
+    - [Docker Image](#docker-image)
+    - [Kubernetes Manifests](#kubernetes-manifests)
+    - [Ingress](#ingress-2)
+    - [Erreichbarkeit](#erreichbarkeit-2)
+  - [CI/CD Pipeline](#cicd-pipeline)
+    - [Ablauf](#ablauf)
+    - [Jobs](#jobs)
+    - [Secrets](#secrets)
+    - [Rolling Update](#rolling-update)
 
 ## Projektkonzept – Kubernetes-Cluster mit CI/CD auf AWS
 
@@ -96,7 +107,7 @@ Jede Applikation läuft in einem **eigenen Namespace** und ist über eine eigene
 
 #### 3.3 CI/CD-Pipeline (GitHub Actions)
 
-```
+``` github
 Code Push → GitHub Actions → Docker Image Build → Push zu GHCR → kubectl apply auf RKE2-Cluster → Rolling Update
 ```
 
@@ -494,3 +505,86 @@ Der kube-prometheus-stack liefert eine Reihe vorkonfigurierter Grafana-Dashboard
 ![grafana_dashboards](media/grafana_dashboards.png)
 
 ![grafana_node_dashboard](media/grafana_node_dashboard.png)
+
+## Demo App
+
+Die Demo App ist eine eigene Python Flask Applikation die speziell für dieses Projekt entwickelt wurde. Sie zeigt Kubernetes-spezifische Laufzeitinformationen wie Pod-Name, Node und Namespace und dient als Grundlage für die CI/CD Pipeline und Rolling Updates.
+
+### Applikation
+
+Die App liest die Umgebungsvariablen `NODE_NAME` und `NAMESPACE` die von Kubernetes automatisch befüllt werden. So ist bei jedem Request ersichtlich welcher Pod auf welchem Node antwortet — das macht Rolling Updates gut sichtbar.
+
+| Endpoint  | Beschreibung                                         |
+| --------- | ---------------------------------------------------- |
+| `/`       | Hauptseite mit Version, Pod-Name, Node und Namespace |
+| `/health` | Health-Check Endpoint                                |
+
+[app.py](../app/app.py)
+
+![demo_app](media/demo_app.png)
+
+### Docker Image
+
+Die App wird als Docker Image gebaut und in der GitHub Container Registry (GHCR) gespeichert. Das Image wird bei jedem Push auf den `main`-Branch automatisch neu gebaut und gepusht.
+
+[Dockerfile](../app/Dockerfile)
+
+### Kubernetes Manifests
+
+Die App läuft im Namespace `app-demo` mit 2 Replicas. Die Umgebungsvariablen `NODE_NAME` und `NAMESPACE` werden via Kubernetes Downward API automatisch aus den Pod-Metadaten befüllt.
+
+| Datei                                                     | Beschreibung                  |
+| --------------------------------------------------------- | ----------------------------- |
+| [deployment.yaml](../kubernetes/app-demo/deployment.yaml) | Deployment mit 2 Replicas     |
+| [service.yaml](../kubernetes/app-demo/service.yaml)       | Service auf Port 5000         |
+| [ingress.yaml](../kubernetes/app-demo/ingress.yaml)       | Ingress mit Let's Encrypt TLS |
+
+### Ingress
+
+Wie bei den anderen Apps wird der Ingress mit der Annotation `cert-manager.io/cluster-issuer: letsencrypt-prod` erstellt. Das TLS-Zertifikat wird automatisch via Cert-Manager und Let's Encrypt ausgestellt.
+
+### Erreichbarkeit
+
+| URL                      | Protokoll             |
+| ------------------------ | --------------------- |
+| <https://demo.sybhad.ch> | HTTPS (Let's Encrypt) |
+
+## CI/CD Pipeline
+
+Die CI/CD Pipeline automatisiert den gesamten Prozess vom Code-Push bis zum Deployment auf dem Cluster. Sie wird via GitHub Actions umgesetzt und triggert bei jedem Push auf den `main`-Branch wenn Dateien im `app/` Ordner geändert wurden.
+
+### Ablauf
+
+Code Push → GitHub Actions → Docker Image Build → Push zu GHCR → kubectl apply → Rolling Update
+
+### Jobs
+
+Die Pipeline besteht aus zwei aufeinanderfolgenden Jobs:
+
+**build-and-push** — baut das Docker Image und pusht es zu GHCR:
+
+- Checkout des Repos
+- Login zu GHCR via `GITHUB_TOKEN`
+- Docker Image bauen und pushen
+
+**deploy** — deployed die App auf den Cluster:
+
+- Kubectl Setup
+- Kubeconfig aus GitHub Secret laden
+- `kubectl apply` auf die Kubernetes Manifests
+- `kubectl rollout restart` für Rolling Update
+
+[demo-app.yaml](../.github/workflows/demo-app.yaml)
+
+### Secrets
+
+| Secret         | Beschreibung                                         |
+| -------------- | ---------------------------------------------------- |
+| `GITHUB_TOKEN` | Automatisch von GitHub bereitgestellt, für GHCR Push |
+| `KUBECONFIG`   | Kubeconfig des RKE2 Clusters, für kubectl Zugriff    |
+
+### Rolling Update
+
+Bei jedem Deployment führt Kubernetes automatisch ein Rolling Update durch — die alten Pods werden schrittweise durch neue ersetzt ohne Downtime. Kubernetes startet zuerst den neuen Pod, wartet bis er `Ready` ist und beendet erst dann den alten.
+
+![github_actions](media/github_actions.png)
