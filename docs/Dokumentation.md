@@ -36,6 +36,12 @@
     - [Installation](#installation-1)
     - [Ingress](#ingress)
     - [Erreichbarkeit](#erreichbarkeit)
+  - [Prometheus \& Grafana](#prometheus--grafana)
+    - [Komponenten](#komponenten)
+    - [Installation](#installation-2)
+    - [Ingress](#ingress-1)
+    - [Erreichbarkeit](#erreichbarkeit-1)
+    - [Dashboards](#dashboards)
 
 ## Projektkonzept – Kubernetes-Cluster mit CI/CD auf AWS
 
@@ -439,3 +445,52 @@ Hier sieht man noch die Ressource in Rancher.
 | <https://podinfo.sybhad.ch> | HTTPS (Let's Encrypt) |
 
 ![podinfo](media/podinfo.png)
+
+## Prometheus & Grafana
+
+Der kube-prometheus-stack wurde via Rancher unter **Apps** → **Charts** im Namespace `monitoring` installiert. Er bündelt Prometheus, Grafana, Alertmanager und Node Exporter in einem einzigen Helm Chart und ist damit die standardisierte Lösung für Kubernetes-Monitoring.
+
+### Komponenten
+
+| Komponente         | Beschreibung                                                            |
+| ------------------ | ----------------------------------------------------------------------- |
+| Prometheus         | Sammelt Metriken von allen Nodes und Pods                               |
+| Grafana            | Visualisiert die Metriken in Dashboards                                 |
+| Alertmanager       | Verwaltet und sendet Alerts                                             |
+| Node Exporter      | Sammelt Betriebssystem-Metriken von jedem Node                          |
+| Kube State Metrics | Sammelt Kubernetes-spezifische Metriken (Pod-Status, Deployments, etc.) |
+
+### Installation
+
+Der kube-prometheus-stack wurde via Rancher unter **Apps** → **Charts** im Namespace `monitoring` installiert. Rancher lädt das Helm Chart direkt aus dem offiziellen Prometheus Community Repository.
+
+![monitoring_pods](media/monitoring_pods.png)
+
+### Ingress
+
+Nach der Installation wurde ein Ingress für Grafana erstellt damit das Dashboard von aussen erreichbar ist. Wie bei den anderen Apps wird das TLS-Zertifikat automatisch via Cert-Manager und Let's Encrypt ausgestellt.
+
+[grafana_ingress.yaml](../kubernetes/monitoring/ingress.yaml)
+
+### Erreichbarkeit
+
+| URL                         | Protokoll             |
+| --------------------------- | --------------------- |
+| <https://grafana.sybhad.ch> | HTTPS (Let's Encrypt) |
+
+![grafana](media/grafana.png)
+
+### Dashboards
+
+Der kube-prometheus-stack liefert eine Reihe vorkonfigurierter Grafana-Dashboards mit. Diese zeigen ohne weitere Konfiguration sofort relevante Metriken des Clusters:
+
+| Dashboard               | Beschreibung                                     |
+| ----------------------- | ------------------------------------------------ |
+| Kubernetes / Nodes      | CPU, RAM und Speicherauslastung pro Node         |
+| Kubernetes / Pods       | Ressourcenverbrauch pro Pod                      |
+| Kubernetes / Namespaces | Übersicht aller Namespaces mit Ressourcennutzung |
+| Node Exporter / Full    | Detaillierte Betriebssystem-Metriken der Nodes   |
+
+![grafana_dashboards](media/grafana_dashboards.png)
+
+![grafana_node_dashboard](media/grafana_node_dashboard.png)
