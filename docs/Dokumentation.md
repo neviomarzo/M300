@@ -16,6 +16,10 @@
     - [7. Kostenkalkulation AWS](#7-kostenkalkulation-aws)
     - [8. Risiken](#8-risiken)
     - [9. Arbeitstechnik](#9-arbeitstechnik)
+    - [10. Technologie-Begründungen](#10-technologie-begründungen)
+      - [Übersicht](#übersicht)
+      - [Details](#details)
+      - [Sicherheitsaspekte](#sicherheitsaspekte)
   - [Netzwerkdiagramm](#netzwerkdiagramm)
   - [Terraform – Infrastructure as code (IaC)](#terraform--infrastructure-as-code-iac)
     - [Dateistruktur](#dateistruktur)
@@ -196,6 +200,45 @@ Budget verbleibt: ~$22 Puffer für unvorhergesehene Kosten.
 - **Wöchentliches Lernjournal:** Jede Woche wird dokumentiert was gelernt, was funktioniert hat und was nicht
 - **Outcome-Dokumentation:** Laufend in GitHub Repository (`/docs`-Ordner)
 - **Reflexion:** Am Ende jeder Woche kurze Reflexion zum eigenen Vorgehen
+
+### 10. Technologie-Begründungen
+
+#### Übersicht
+
+| Bereich                 | Gewählt       | Alternative(n) | Begründung                                                                                                                                               |
+| ----------------------- | ------------- | -------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Kubernetes-Distribution | RKE2          | K3s, EKS       | CIS-Benchmark-konform und produktionsnah; EKS Control Plane allein (~72 USD/Monat) übersteigt das Budget; K3s ist stärker auf Edge-Deployments optimiert |
+| Instanztyp              | t3.medium     | t3.small       | RKE2 benötigt min. 2 vCPU / 4GB RAM; t3.small bietet nur 2GB RAM; Burstable Performance deckt Lastspitzen ab                                             |
+| Ingress Controller      | Nginx Ingress | Traefik        | Standard, native Cert-Manager-Integration via HTTP01, wird von Rancher mitinstalliert                                                           |
+| IaC-Tool                | Terraform     | CloudFormation | Cloud-agnostisch (HCL), Industriestandard, bessere Lesbarkeit als JSON/YAML                                                                              |
+| Container Registry      | GHCR          | Docker Hub     | Native GitHub-Integration via `GITHUB_TOKEN`, keine zusätzlichen Credentials nötig                                                                       |
+
+#### Details
+
+**Warum RKE2 und nicht K3s oder EKS?**
+
+RKE2 wurde gewählt weil es eine produktionsnahe, CIS-Benchmark-konforme Kubernetes-Distribution ist die gleichzeitig einfach zu installieren ist. K3s wäre ressourcenschonender, ist aber stärker für Edge-Deployments optimiert und weicht in einigen Punkten vom Upstream-Kubernetes ab. EKS wurde aus Kostengründen verworfen — der EKS Control Plane kostet bereits rund 0.10 USD/h (~72 USD/Monat), was das 50 USD Budget allein für den Control Plane übersteigen würde. RKE2 auf EC2 ermöglicht volle Kostenkontrolle und vermittelt zusätzlich tiefere Kubernetes-Kenntnisse, da der Cluster selbst aufgesetzt wird.
+
+**Warum t3.medium?**
+
+RKE2 benötigt pro Node mindestens 2 vCPU und 4GB RAM für einen stabilen Betrieb der Control-Plane-Komponenten sowie der Workloads. t3.medium erfüllt diese Anforderung exakt und bietet mit Burstable Performance zusätzliche CPU-Reserven für Lastspitzen (z.B. beim Cluster-Start oder bei Helm-Installationen), ohne die Kosten gegenüber einer kleineren Instanz (t3.small mit nur 2GB RAM) unverhältnismässig zu erhöhen.
+
+**Warum Nginx Ingress Controller und nicht Traefik?**
+
+Nginx Ingress ist der De-facto-Standard für Kubernetes-Ingress, hat die breiteste Community-Unterstützung und Dokumentation, und wird von Cert-Manager nativ über die HTTP01-Challenge unterstützt. Traefik bietet ähnliche Funktionalität, jedoch mit einer anderen Konfigurationssyntax (CRDs statt Standard-Ingress-Ressourcen) was die Lernkurve erhöht hätte. Da Rancher Nginx Ingress standardmässig mitinstalliert, ergab sich zudem ein praktischer Vorteil.
+
+**Warum Terraform und nicht CloudFormation?**
+
+Terraform ist Cloud-agnostisch und unterstützt neben AWS auch Azure, GCP und weitere Provider mit derselben Syntax (HCL). Dies erleichtert den Lerntransfer auf andere Cloud-Plattformen. CloudFormation ist AWS-spezifisch und nutzt JSON/YAML, was für komplexere Konfigurationen unübersichtlicher wird. Terraform ist zudem der Industriestandard für Infrastructure as Code und in den meisten Unternehmen im Einsatz.
+
+**Warum GitHub Container Registry (GHCR) und nicht Docker Hub?**
+
+GHCR ist direkt in GitHub integriert — Authentifizierung über `GITHUB_TOKEN` funktioniert ohne zusätzliche Secrets. Docker Hub limitiert unauthentifizierte Pulls und erfordert ein separates Konto mit eigenen Zugangsdaten. Da das Projekt bereits vollständig auf GitHub aufbaut (Code, Actions, Container), reduziert GHCR die Anzahl der externen Abhängigkeiten.
+
+#### Sicherheitsaspekte
+
+- **Secrets-Management:** Sensible Daten (kubeconfig, AWS Credentials) werden ausschliesslich als GitHub Secrets oder Kubernetes Secrets gespeichert, nie im Code
+- **TLS:** Alle Applikationen sind
 
 ## Netzwerkdiagramm
 
