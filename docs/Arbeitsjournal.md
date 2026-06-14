@@ -250,3 +250,49 @@ Flask Demo-App entwickelt die Kubernetes-Laufzeitinformationen anzeigt. GitHub A
 
 Was gelernt:
 GitHub Actions ermöglicht eine vollständig automatisierte CI/CD Pipeline. Mit `GITHUB_TOKEN` kann direkt zu GHCR gepusht werden ohne zusätzliche Credentials. Kubernetes Rolling Updates laufen automatisch ohne Downtime wenn ein neues Image deployed wird.
+
+---
+
+## Arbeit Zuhause – 14.06.2026
+
+---
+
+### Tagesziele
+
+- [x] Konnektivitätstests durchführen und dokumentieren
+- [x] Dokumentation um Technologie-Begründungen (A1) ergänzen
+- [x] Rollenkonzept (I1) vorbereiten
+
+---
+
+### Resultate
+
+- Cluster-Status geprüft: alle 3 Nodes `Ready` mit RKE2 `v1.35.5+rke2r2`
+- HTTPS-Erreichbarkeit aller Apps via `curl -I` getestet (demo, podinfo, grafana)
+- TLS-Zertifikate bei allen drei Domains aktiv (HSTS-Header gesetzt)
+- Abschnitt "Technologie-Begründungen" in der Dokumentation ergänzt (Begründungen für RKE2, t3.medium, Nginx, Terraform, GHCR)
+- Aktuellen Stand für Rollenkonzept analysiert: noch keine RBAC-Rollen definiert, Zugriff aktuell via `cluster-admin`
+
+---
+
+### Probleme & Reflexion
+
+| Problem                                 | Ursache                                 | Lösung / Reflexion                                   |
+| --------------------------------------- | --------------------------------------- | ---------------------------------------------------- |
+| Podinfo antwortet mit 405 auf `curl -I` | Podinfo unterstützt keine HEAD-Requests | Kein Fehler, normales Verhalten der App dokumentiert |
+
+---
+
+### Ressourcen
+
+| Ressource                     | Link                                                            |
+| ----------------------------- | --------------------------------------------------------------- |
+| Kubernetes RBAC Doku          | <https://kubernetes.io/docs/reference/access-authn-authz/rbac/> |
+| Cert-Manager HTTP01 Challenge | <https://cert-manager.io/docs/configuration/acme/http01/>       |
+
+---
+
+### Praktische Übung
+
+Was gemacht:
+Konnektivitätstests für Cluster und alle drei Applikationen durchgeführt und dokumentiert. Dokumentation um Technologie-Begründungen ergänzt.
