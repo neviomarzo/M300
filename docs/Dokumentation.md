@@ -20,6 +20,7 @@
       - [Übersicht](#übersicht)
       - [Details](#details)
       - [Sicherheitsaspekte](#sicherheitsaspekte)
+      - [Skalierbarkeit \& Flexibilität](#skalierbarkeit--flexibilität)
   - [Netzwerkdiagramm](#netzwerkdiagramm)
   - [Terraform – Infrastructure as code (IaC)](#terraform--infrastructure-as-code-iac)
     - [Dateistruktur](#dateistruktur)
@@ -205,13 +206,13 @@ Budget verbleibt: ~$22 Puffer für unvorhergesehene Kosten.
 
 #### Übersicht
 
-| Bereich                 | Gewählt       | Alternative(n) | Begründung                                                                                                                                               |
-| ----------------------- | ------------- | -------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Kubernetes-Distribution | RKE2          | K3s, EKS       | CIS-Benchmark-konform und produktionsnah; EKS Control Plane allein (~72 USD/Monat) übersteigt das Budget; K3s ist stärker auf Edge-Deployments optimiert |
-| Instanztyp              | t3.medium     | t3.small       | RKE2 benötigt min. 2 vCPU / 4GB RAM; t3.small bietet nur 2GB RAM; Burstable Performance deckt Lastspitzen ab                                             |
-| Ingress Controller      | Nginx Ingress | Traefik        | Standard, native Cert-Manager-Integration via HTTP01, wird von Rancher mitinstalliert                                                           |
-| IaC-Tool                | Terraform     | CloudFormation | Cloud-agnostisch (HCL), Industriestandard, bessere Lesbarkeit als JSON/YAML                                                                              |
-| Container Registry      | GHCR          | Docker Hub     | Native GitHub-Integration via `GITHUB_TOKEN`, keine zusätzlichen Credentials nötig                                                                       |
+| Bereich | Gewählt | Alternative(n) | Begründung |
+|---|---|---|---|
+| Kubernetes-Distribution | RKE2 | K3s, EKS | CIS-Benchmark-konform und produktionsnah; EKS Control Plane allein (~72 USD/Monat) übersteigt das Budget; K3s ist stärker auf Edge-Deployments optimiert |
+| Instanztyp | t3.medium | t3.small | RKE2 benötigt min. 2 vCPU / 4GB RAM; t3.small bietet nur 2GB RAM; Burstable Performance deckt Lastspitzen ab |
+| Ingress Controller | Nginx Ingress | Traefik | De-facto-Standard, native Cert-Manager-Integration via HTTP01, wird von Rancher mitinstalliert |
+| IaC-Tool | Terraform | CloudFormation | Cloud-agnostisch (HCL), Industriestandard, bessere Lesbarkeit als JSON/YAML |
+| Container Registry | GHCR | Docker Hub | Native GitHub-Integration via `GITHUB_TOKEN`, keine zusätzlichen Credentials nötig |
 
 #### Details
 
@@ -238,7 +239,12 @@ GHCR ist direkt in GitHub integriert — Authentifizierung über `GITHUB_TOKEN` 
 #### Sicherheitsaspekte
 
 - **Secrets-Management:** Sensible Daten (kubeconfig, AWS Credentials) werden ausschliesslich als GitHub Secrets oder Kubernetes Secrets gespeichert, nie im Code
-- **TLS:** Alle Applikationen sind
+- **TLS:** Alle Applikationen sind ausschliesslich über HTTPS mit automatisch erneuerten Let's Encrypt Zertifikaten erreichbar
+- **Security Groups:** Nur die für RKE2 und die Applikationen benötigten Ports sind geöffnet
+
+#### Skalierbarkeit & Flexibilität
+
+Die Multi-Node-Architektur mit `count` in Terraform erlaubt das Hinzufügen weiterer Worker-Nodes durch eine einzige Code-Änderung. Die Namespace-Trennung der Applikationen ermöglicht unabhängige Skalierung pro App über Kubernetes Replicas, ohne dass andere Apps beeinflusst werden.
 
 ## Netzwerkdiagramm
 
