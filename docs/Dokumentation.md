@@ -58,6 +58,9 @@
     - [Jobs](#jobs)
     - [Secrets](#secrets)
     - [Rolling Update](#rolling-update)
+  - [Konnektivitätstests](#konnektivitätstests)
+    - [Cluster Status](#cluster-status-1)
+    - [HTTPS-Erreichbarkeit der Applikationen](#https-erreichbarkeit-der-applikationen)
 
 ## Projektkonzept – Kubernetes-Cluster mit CI/CD auf AWS
 
@@ -637,3 +640,25 @@ Die Pipeline besteht aus zwei aufeinanderfolgenden Jobs:
 Bei jedem Deployment führt Kubernetes automatisch ein Rolling Update durch — die alten Pods werden schrittweise durch neue ersetzt ohne Downtime. Kubernetes startet zuerst den neuen Pod, wartet bis er `Ready` ist und beendet erst dann den alten.
 
 ![github_actions](media/github_actions.png)
+
+## Konnektivitätstests
+
+### Cluster Status
+
+Alle drei Nodes sind im Status `Ready` und laufen mit RKE2 Version `v1.35.5+rke2r2`:
+
+![get_nodes](media/get_nodes.png)
+
+### HTTPS-Erreichbarkeit der Applikationen
+
+Alle Applikationen wurden via `curl -I` auf Erreichbarkeit und TLS-Konfiguration getestet:
+
+| URL                         | Status                 | Bemerkung                                                             |
+| --------------------------- | ---------------------- | --------------------------------------------------------------------- |
+| <https://demo.sybhad.ch>    | 200 OK                 | Demo-App erreichbar                                                   |
+| <https://podinfo.sybhad.ch> | 405 Method Not Allowed | Podinfo unterstützt keine HEAD-Requests (nur GET), normales Verhalten |
+| <https://grafana.sybhad.ch> | 302 Found → /login     | Erwartetes Redirect-Verhalten bei nicht eingeloggtem Zugriff          |
+
+Bei allen drei Domains ist der Header `strict-transport-security: max-age=31536000; includeSubDomains` gesetzt — die TLS-Zertifikate von Let's Encrypt sind korrekt ausgestellt und aktiv.
+
+![connectivity_test](media/connectivity_test.png)
