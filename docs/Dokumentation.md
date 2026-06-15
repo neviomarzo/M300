@@ -41,11 +41,6 @@
     - [Installation](#installation-1)
     - [Ingress](#ingress)
     - [Erreichbarkeit](#erreichbarkeit)
-  - [Fehleranalyse und Protokollierung](#fehleranalyse-und-protokollierung)
-    - [Kategorisierung](#kategorisierung)
-    - [Priorisierung](#priorisierung)
-    - [Beispiel: NodeNotReady Event](#beispiel-nodenotready-event)
-    - [Weitere dokumentierte Fehler](#weitere-dokumentierte-fehler)
   - [Prometheus \& Grafana](#prometheus--grafana)
     - [Komponenten](#komponenten)
     - [Installation](#installation-2)
@@ -66,6 +61,11 @@
   - [Konnektivitätstests](#konnektivitätstests)
     - [Cluster Status](#cluster-status-1)
     - [HTTPS-Erreichbarkeit der Applikationen](#https-erreichbarkeit-der-applikationen)
+  - [Fehleranalyse und Protokollierung](#fehleranalyse-und-protokollierung)
+    - [Kategorisierung](#kategorisierung)
+    - [Priorisierung](#priorisierung)
+    - [Beispiel: NodeNotReady Event](#beispiel-nodenotready-event)
+    - [Weitere dokumentierte Fehler](#weitere-dokumentierte-fehler)
 
 ## Projektkonzept – Kubernetes-Cluster mit CI/CD auf AWS
 
@@ -514,52 +514,6 @@ Hier sieht man noch die Ressource in Rancher.
 
 ![podinfo](media/podinfo.png)
 
-## Fehleranalyse und Protokollierung
-
-Während des Projekts traten verschiedene Fehler auf, die systematisch analysiert und dokumentiert wurden. Die Analyse erfolgte primär über `kubectl logs`, `kubectl describe` und `kubectl get events`.
-
-### Kategorisierung
-
-| Kategorie     | Beschreibung                                    | Beispiele                                               |
-| ------------- | ----------------------------------------------- | ------------------------------------------------------- |
-| Infrastruktur | Fehler bei der Provisionierung (Terraform, AWS) | Region-Fehlkonfiguration, AMI-Replacement               |
-| Cluster/Node  | Fehler im Betrieb der RKE2-Nodes                | NodeNotReady, Pod-Rescheduling                          |
-| Pipeline      | Fehler in CI/CD                                 | GHCR-Berechtigung, Deprecation-Warnungen                |
-| Konfiguration | Fehlerhafte YAML-Manifeste                      | Rancher-generierte Ingress-YAMLs mit ungültigen Feldern |
-
-### Priorisierung
-
-| Priorität | Kriterium                                                 |
-| --------- | --------------------------------------------------------- |
-| Hoch      | Verhindert Deployment oder Cluster-Betrieb vollständig    |
-| Mittel    | Beeinträchtigt einzelne Komponenten, Workaround vorhanden |
-| Niedrig   | Warnungen ohne funktionalen Einfluss                      |
-
-### Beispiel: NodeNotReady Event
-
-Mittels `kubectl get events -n app-demo` wurde folgendes Ereignis identifiziert:
-
-![nodenotready](media/nodenotready.png)
-
-**Analyse:**
-
-- **Kategorie:** Cluster/Node
-- **Priorität:** Mittel
-- **Ursache:** Ein Node wechselte kurzzeitig in den Status `NotReady` (z.B. durch Ressourcenengpass oder Netzwerk-Hiccup)
-- **Auswirkung:** Kubernetes hat den betroffenen Pod automatisch als `SandboxChanged` markiert, neu erstellt und auf einen verfügbaren Node verschoben
-- **Lösung:** Keine manuelle Intervention nötig — die Selbstheilungsmechanismen von Kubernetes (Self-Healing) haben den Pod automatisch neu gestartet. Das Deployment blieb durchgehend verfügbar (`2/2 Ready`)
-- **Reflexion:** Dieses Verhalten zeigt einen zentralen Vorteil von Kubernetes — transiente Node-Probleme führen nicht zu Downtime, solange genügend Replicas und Worker-Nodes vorhanden sind
-
-### Weitere dokumentierte Fehler
-
-| Fehler                                                                                     | Kategorie     | Priorität | Lösung                                                                                      | Referenz               |
-| ------------------------------------------------------------------------------------------ | ------------- | --------- | ------------------------------------------------------------------------------------------- | ---------------------- |
-| `terraform apply` 403 UnauthorizedOperation                                                | Infrastruktur | Hoch      | AWS Region von `eu-central-1` auf `us-east-1` korrigiert (Account-Default)                  | Arbeitsjournal Woche 2 |
-| AMI-Replacement bei `terraform plan`                                                       | Infrastruktur | Niedrig   | `most_recent = true` führt bei neuem Canonical-Image zu Replacement; für Projekt akzeptiert | Konsole                |
-| GHCR `denied: installation not allowed`                                                    | Pipeline      | Hoch      | Workflow Permissions auf "Read and write" gesetzt                                           | GitHub Actions Log     |
-| Node.js 20 Deprecation Warning                                                             | Pipeline      | Niedrig   | `FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true` gesetzt                                          | GitHub Actions Log     |
-| Rancher-generiertes Ingress-YAML mit ungültigen Feldern (`vKey`, `cacheObject`, `__clone`) | Konfiguration | Mittel    | Felder manuell entfernt vor `kubectl apply`                                                 | Podinfo Ingress        |
-
 ## Prometheus & Grafana
 
 Der kube-prometheus-stack wurde via Rancher unter **Apps** → **Charts** im Namespace `monitoring` installiert. Er bündelt Prometheus, Grafana, Alertmanager und Node Exporter in einem einzigen Helm Chart und ist damit die standardisierte Lösung für Kubernetes-Monitoring.
@@ -713,3 +667,49 @@ Alle Applikationen wurden via `curl -I` auf Erreichbarkeit und TLS-Konfiguration
 Bei allen drei Domains ist der Header `strict-transport-security: max-age=31536000; includeSubDomains` gesetzt — die TLS-Zertifikate von Let's Encrypt sind korrekt ausgestellt und aktiv.
 
 ![connectivity_test](media/connectivity_test.png)
+
+## Fehleranalyse und Protokollierung
+
+Während des Projekts traten verschiedene Fehler auf, die systematisch analysiert und dokumentiert wurden. Die Analyse erfolgte primär über `kubectl logs`, `kubectl describe` und `kubectl get events`.
+
+### Kategorisierung
+
+| Kategorie     | Beschreibung                                    | Beispiele                                               |
+| ------------- | ----------------------------------------------- | ------------------------------------------------------- |
+| Infrastruktur | Fehler bei der Provisionierung (Terraform, AWS) | Region-Fehlkonfiguration, AMI-Replacement               |
+| Cluster/Node  | Fehler im Betrieb der RKE2-Nodes                | NodeNotReady, Pod-Rescheduling                          |
+| Pipeline      | Fehler in CI/CD                                 | GHCR-Berechtigung, Deprecation-Warnungen                |
+| Konfiguration | Fehlerhafte YAML-Manifeste                      | Rancher-generierte Ingress-YAMLs mit ungültigen Feldern |
+
+### Priorisierung
+
+| Priorität | Kriterium                                                 |
+| --------- | --------------------------------------------------------- |
+| Hoch      | Verhindert Deployment oder Cluster-Betrieb vollständig    |
+| Mittel    | Beeinträchtigt einzelne Komponenten, Workaround vorhanden |
+| Niedrig   | Warnungen ohne funktionalen Einfluss                      |
+
+### Beispiel: NodeNotReady Event
+
+Mittels `kubectl get events -n app-demo` wurde folgendes Ereignis identifiziert:
+
+![nodenotready](media/nodenotready.png)
+
+**Analyse:**
+
+- **Kategorie:** Cluster/Node
+- **Priorität:** Mittel
+- **Ursache:** Ein Node wechselte kurzzeitig in den Status `NotReady` (z.B. durch Ressourcenengpass oder Netzwerk-Hiccup)
+- **Auswirkung:** Kubernetes hat den betroffenen Pod automatisch als `SandboxChanged` markiert, neu erstellt und auf einen verfügbaren Node verschoben
+- **Lösung:** Keine manuelle Intervention nötig — die Selbstheilungsmechanismen von Kubernetes (Self-Healing) haben den Pod automatisch neu gestartet. Das Deployment blieb durchgehend verfügbar (`2/2 Ready`)
+- **Reflexion:** Dieses Verhalten zeigt einen zentralen Vorteil von Kubernetes — transiente Node-Probleme führen nicht zu Downtime, solange genügend Replicas und Worker-Nodes vorhanden sind
+
+### Weitere dokumentierte Fehler
+
+| Fehler                                                                                     | Kategorie     | Priorität | Lösung                                                                                      | Referenz               |
+| ------------------------------------------------------------------------------------------ | ------------- | --------- | ------------------------------------------------------------------------------------------- | ---------------------- |
+| `terraform apply` 403 UnauthorizedOperation                                                | Infrastruktur | Hoch      | AWS Region von `eu-central-1` auf `us-east-1` korrigiert (Account-Default)                  | Arbeitsjournal Woche 2 |
+| AMI-Replacement bei `terraform plan`                                                       | Infrastruktur | Niedrig   | `most_recent = true` führt bei neuem Canonical-Image zu Replacement; für Projekt akzeptiert | Konsole                |
+| GHCR `denied: installation not allowed`                                                    | Pipeline      | Hoch      | Workflow Permissions auf "Read and write" gesetzt                                           | GitHub Actions Log     |
+| Node.js 20 Deprecation Warning                                                             | Pipeline      | Niedrig   | `FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true` gesetzt                                          | GitHub Actions Log     |
+| Rancher-generiertes Ingress-YAML mit ungültigen Feldern (`vKey`, `cacheObject`, `__clone`) | Konfiguration | Mittel    | Felder manuell entfernt vor `kubectl apply`                                                 | Podinfo Ingress        |
