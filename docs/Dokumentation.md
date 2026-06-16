@@ -706,10 +706,10 @@ Mittels `kubectl get events -n app-demo` wurde folgendes Ereignis identifiziert:
 
 ### Weitere dokumentierte Fehler
 
-| Fehler                                                                                     | Kategorie     | Priorität | Lösung                                                                                      | Referenz               |
-| ------------------------------------------------------------------------------------------ | ------------- | --------- | ------------------------------------------------------------------------------------------- | ---------------------- |
-| `terraform apply` 403 UnauthorizedOperation                                                | Infrastruktur | Hoch      | AWS Region von `eu-central-1` auf `us-east-1` korrigiert (Account-Default)                  | Arbeitsjournal Woche 2 |
-| AMI-Replacement bei `terraform plan`                                                       | Infrastruktur | Niedrig   | `most_recent = true` führt bei neuem Canonical-Image zu Replacement; für Projekt akzeptiert | Konsole                |
-| GHCR `denied: installation not allowed`                                                    | Pipeline      | Hoch      | Workflow Permissions auf "Read and write" gesetzt                                           | GitHub Actions Log     |
-| Node.js 20 Deprecation Warning                                                             | Pipeline      | Niedrig   | `FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true` gesetzt                                          | GitHub Actions Log     |
-| Rancher-generiertes Ingress-YAML mit ungültigen Feldern (`vKey`, `cacheObject`, `__clone`) | Konfiguration | Mittel    | Felder manuell entfernt vor `kubectl apply`                                                 | Podinfo Ingress        |
+| Fehler                                                                                     | Kategorie     | Priorität | Lösung                                                                                      |
+| ------------------------------------------------------------------------------------------ | ------------- | --------- | ------------------------------------------------------------------------------------------- |
+| `terraform apply` 403 UnauthorizedOperation                                                | Infrastruktur | Hoch      | AWS Region von `eu-central-1` auf `us-east-1` korrigiert (Account-Default)                  |
+| AMI-Replacement bei `terraform plan`                                                       | Infrastruktur | Niedrig   | `most_recent = true` führt bei neuem Canonical-Image zu Replacement; für Projekt akzeptiert |
+| GHCR `denied: installation not allowed`                                                    | Pipeline      | Hoch      | Workflow Permissions auf "Read and write" gesetzt                                           |
+| Node.js 20 Deprecation Warning                                                             | Pipeline      | Niedrig   | `FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true` gesetzt                                          |
+| Rancher-generiertes Ingress-YAML mit ungültigen Feldern (`vKey`, `cacheObject`, `__clone`) | Konfiguration | Mittel    | Felder manuell entfernt vor `kubectl apply`                                                 |
