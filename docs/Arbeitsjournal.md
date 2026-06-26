@@ -41,6 +41,12 @@
     - [Probleme \& Reflexion](#probleme--reflexion-5)
     - [Ressourcen](#ressourcen-5)
     - [Praktische Übung](#praktische-übung-5)
+  - [26.06.2026](#26062026)
+    - [Tagesziele](#tagesziele-6)
+    - [Resultate](#resultate-6)
+    - [Probleme \& Reflexion](#probleme--reflexion-6)
+    - [Ressourcen](#ressourcen-6)
+    - [Praktische Übung](#praktische-übung-6)
 
 ---
 
@@ -334,3 +340,54 @@ GitHub Actions ermöglicht eine vollständig automatisierte CI/CD Pipeline. Mit 
 
 Was gemacht:
 Konnektivitätstests für Cluster und alle drei Applikationen durchgeführt und dokumentiert. Dokumentation um Technologie-Begründungen ergänzt.
+
+---
+
+## 26.06.2026
+
+---
+
+### Tagesziele
+
+- [x] RBAC Rollenkonzept erstellen und dokumentieren
+- [x] CI/CD Pipeline mit eingeschränktem ServiceAccount konfigurieren
+- [x] Alertmanager mit E-Mail-Benachrichtigung konfigurieren
+
+---
+
+### Resultate
+
+- ServiceAccount `cicd-deployer` mit eingeschränkter RBAC-Rolle im Namespace `app-demo` erstellt
+- CI/CD Pipeline auf den neuen ServiceAccount umgestellt (Least Privilege Prinzip)
+- Kubernetes Secret `alertmanager-smtp` für Gmail App-Passwort erstellt
+- Alertmanager via Helm mit Gmail SMTP konfiguriert — Alerts werden per E-Mail weitergeleitet
+- Alerting erfolgreich getestet: `TargetDown` Alerts ausgelöst, E-Mail erhalten
+
+---
+
+### Probleme & Reflexion
+
+| Problem                                                       | Ursache                           | Lösung / Reflexion                                        |
+| ------------------------------------------------------------- | --------------------------------- | --------------------------------------------------------- |
+| `cicd-deployer` hatte keine Rechte für Ingresses und Services | Role zu restriktiv definiert      | Role um `ingresses` und `services` Rechte erweitert       |
+| `auth_password_secret` Feld nicht gefunden                    | Kein gültiges Alertmanager-Feld   | Auf `smtp_auth_password_file` mit Secret-Mount umgestellt |
+| `undefined receiver "null"`                                   | Null-Receiver in Config vergessen | Null-Receiver wieder hinzugefügt                          |
+
+---
+
+### Ressourcen
+
+| Ressource                  | Link                                                            |
+| -------------------------- | --------------------------------------------------------------- |
+| Kubernetes RBAC Doku       | <https://kubernetes.io/docs/reference/access-authn-authz/rbac/> |
+| Alertmanager Konfiguration | <https://prometheus.io/docs/alerting/latest/configuration/>     |
+
+---
+
+### Praktische Übung
+
+Was gemacht:
+RBAC-Rollenkonzept mit eingeschränktem ServiceAccount für die CI/CD Pipeline umgesetzt. Alertmanager mit Gmail SMTP konfiguriert und Alerting erfolgreich getestet.
+
+Was gelernt:
+RBAC folgt dem Least-Privilege-Prinzip — ein ServiceAccount erhält nur die Rechte die er wirklich braucht. Alertmanager kann Kubernetes Secrets nicht direkt lesen, sie müssen als Datei in den Pod gemountet werden. Templates in Alertmanager definieren das Format der Benachrichtigungen.
