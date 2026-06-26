@@ -47,6 +47,11 @@
     - [Ingress](#ingress-1)
     - [Erreichbarkeit](#erreichbarkeit-1)
     - [Dashboards](#dashboards)
+    - [Alerting](#alerting)
+      - [Konfiguration](#konfiguration)
+      - [Receiver](#receiver)
+      - [Routing](#routing)
+      - [Test](#test)
   - [Demo App](#demo-app)
     - [Applikation](#applikation)
     - [Docker Image](#docker-image)
@@ -567,6 +572,37 @@ Der kube-prometheus-stack liefert eine Reihe vorkonfigurierter Grafana-Dashboard
 ![grafana_dashboards](media/grafana_dashboards.png)
 
 ![grafana_node_dashboard](media/grafana_node_dashboard.png)
+
+### Alerting
+
+Alertmanager ist Teil des kube-prometheus-stack und verwaltet die Weiterleitung von Alerts. Er wurde so konfiguriert dass Alerts per E-Mail an `nevio.marzo@edu.tbz.ch` gesendet werden.
+
+#### Konfiguration
+
+Die Alertmanager-Konfiguration wird via Helm Values gesetzt. Das SMTP-Passwort wird nicht im Code gespeichert — es wird als Kubernetes Secret `alertmanager-smtp` im Namespace `monitoring` hinterlegt und via `smtp_auth_password_file` als Datei in den Alertmanager-Pod gemountet.
+
+[alertmanager-values.yaml](../kubernetes/monitoring/alertmanager-values.yaml)
+
+#### Receiver
+
+| Receiver | Typ                 | Beschreibung                                  |
+| -------- | ------------------- | --------------------------------------------- |
+| `null`   | –                   | Verwirft Alerts (wird für Watchdog verwendet) |
+| `email`  | E-Mail (Gmail SMTP) | Sendet Alerts an `m300alert@gmail.com`        |
+
+#### Routing
+
+Alle Alerts werden standardmässig an den `email` Receiver weitergeleitet. Der `Watchdog` Alert (Herzschlag-Alert von Prometheus) wird an `null` geleitet und damit verworfen.
+
+Die UI sieht so aus.
+
+![alertmanager](media/alertmanager.png)
+
+#### Test
+
+Das Alerting wurde anhand bestehender Cluster-Alerts verifiziert. Prometheus hat mehrere `TargetDown` Alerts ausgelöst (kube-controller-manager, kube-etcd, kube-scheduler, node-exporter) und Alertmanager hat die Alerts korrekt per E-Mail an `m300alert@gmail.com` weitergeleitet.
+
+![alertmanager_email](media/alertmanager_email.png)
 
 ## Demo App
 
