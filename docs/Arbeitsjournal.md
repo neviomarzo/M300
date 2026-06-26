@@ -4,9 +4,47 @@
 **Modul:** M300 – Cloud & Infrastruktur
 **Zeitraum:** Mai – Juli 2026
 
+- [Arbeitsjournal – M300 Cloud Modul](#arbeitsjournal--m300-cloud-modul)
+  - [22.05.2026](#22052026)
+    - [Tagesziele](#tagesziele)
+    - [Resultate](#resultate)
+    - [Probleme \& Reflexion](#probleme--reflexion)
+    - [Ressourcen](#ressourcen)
+    - [Praktische Übung](#praktische-übung)
+  - [29.05.2026](#29052026)
+    - [Tagesziele](#tagesziele-1)
+    - [Resultate](#resultate-1)
+    - [Probleme \& Reflexion](#probleme--reflexion-1)
+    - [Ressourcen](#ressourcen-1)
+    - [Praktische Übung](#praktische-übung-1)
+  - [02.06.2026](#02062026)
+    - [Tagesziele](#tagesziele-2)
+    - [Resultate](#resultate-2)
+    - [Probleme \& Reflexion](#probleme--reflexion-2)
+    - [Ressourcen](#ressourcen-2)
+    - [Praktische Übung](#praktische-übung-2)
+  - [05.06.2026](#05062026)
+    - [Tagesziele](#tagesziele-3)
+    - [Resultate](#resultate-3)
+    - [Probleme \& Reflexion](#probleme--reflexion-3)
+    - [Ressourcen](#ressourcen-3)
+    - [Praktische Übung](#praktische-übung-3)
+  - [12.06.2026](#12062026)
+    - [Tagesziele](#tagesziele-4)
+    - [Resultate](#resultate-4)
+    - [Probleme \& Reflexion](#probleme--reflexion-4)
+    - [Ressourcen](#ressourcen-4)
+    - [Praktische Übung](#praktische-übung-4)
+  - [14.06.2026](#14062026)
+    - [Tagesziele](#tagesziele-5)
+    - [Resultate](#resultate-5)
+    - [Probleme \& Reflexion](#probleme--reflexion-5)
+    - [Ressourcen](#ressourcen-5)
+    - [Praktische Übung](#praktische-übung-5)
+
 ---
 
-## Woche 1 – 22.05.2026
+## 22.05.2026
 
 ---
 
@@ -58,7 +96,7 @@ Hier der Eintrag für Woche 2:
 
 ---
 
-## Woche 2 – 29.05.2026
+## 29.05.2026
 
 ---
 
@@ -104,7 +142,7 @@ Terraform erstellt Ressourcen automatisch in der richtigen Reihenfolge basierend
 
 ---
 
-## Arbeit Zuhause – 02.06.2026
+## 02.06.2026
 
 ---
 
@@ -153,7 +191,7 @@ Hier der Eintrag:
 
 ---
 
-## Woche 3 – 05.06.2026
+## 05.06.2026
 
 ---
 
@@ -203,7 +241,7 @@ Cert-Manager nimmt einem die manuelle Zertifikatsverwaltung komplett ab — soba
 
 ---
 
-## Woche 4 – 12.06.2026
+## 12.06.2026
 
 ---
 
@@ -253,7 +291,7 @@ GitHub Actions ermöglicht eine vollständig automatisierte CI/CD Pipeline. Mit 
 
 ---
 
-## Arbeit Zuhause – 14.06.2026
+## 14.06.2026
 
 ---
 
