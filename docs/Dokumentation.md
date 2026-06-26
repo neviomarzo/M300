@@ -66,6 +66,11 @@
     - [Priorisierung](#priorisierung)
     - [Beispiel: NodeNotReady Event](#beispiel-nodenotready-event)
     - [Weitere dokumentierte Fehler](#weitere-dokumentierte-fehler)
+  - [Rollenkonzept](#rollenkonzept)
+    - [Kubernetes RBAC](#kubernetes-rbac)
+      - [Übersicht](#übersicht-1)
+      - [CI/CD ServiceAccount](#cicd-serviceaccount)
+      - [RBAC-Ressourcen](#rbac-ressourcen)
 
 ## Projektkonzept – Kubernetes-Cluster mit CI/CD auf AWS
 
@@ -713,3 +718,40 @@ Mittels `kubectl get events -n app-demo` wurde folgendes Ereignis identifiziert:
 | GHCR `denied: installation not allowed`                                                    | Pipeline      | Hoch      | Workflow Permissions auf "Read and write" gesetzt                                           |
 | Node.js 20 Deprecation Warning                                                             | Pipeline      | Niedrig   | `FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true` gesetzt                                          |
 | Rancher-generiertes Ingress-YAML mit ungültigen Feldern (`vKey`, `cacheObject`, `__clone`) | Konfiguration | Mittel    | Felder manuell entfernt vor `kubectl apply`                                                 |
+
+## Rollenkonzept
+
+### Kubernetes RBAC
+
+RBAC (Role-Based Access Control) regelt in Kubernetes wer welche Aktionen auf welchen Ressourcen ausführen darf. Es trennt Authentifizierung (wer bin ich) von Autorisierung (was darf ich).
+
+#### Übersicht
+
+| Rolle                | Benutzer/Service               | Namespace  | Rechte                                |
+| -------------------- | ------------------------------ | ---------- | ------------------------------------- |
+| `cluster-admin`      | Administrator (kubeconfig)     | alle       | Volle Rechte auf alle Ressourcen      |
+| Rancher Admin        | Rancher UI                     | alle       | Volle Verwaltungsrechte via Rancher   |
+| `cicd-deployer-role` | ServiceAccount `cicd-deployer` | `app-demo` | Deployments aktualisieren, Pods lesen |
+
+#### CI/CD ServiceAccount
+
+Für die GitHub Actions Pipeline wurde ein eingeschränkter ServiceAccount `cicd-deployer` im Namespace `app-demo` erstellt. Dieser darf ausschliesslich:
+
+- Deployments lesen, aktualisieren und patchen (`apps/deployments`)
+- Pods lesen (`pods`)
+
+Damit folgt die Pipeline dem Prinzip der **minimalen Rechte (Least Privilege)** — die Pipeline hat nur die Berechtigungen die sie tatsächlich braucht, nicht `cluster-admin`.
+
+#### RBAC-Ressourcen
+
+| Ressource      | Name                    | Namespace  |
+| -------------- | ----------------------- | ---------- |
+| ServiceAccount | `cicd-deployer`         | `app-demo` |
+| Role           | `cicd-deployer-role`    | `app-demo` |
+| RoleBinding    | `cicd-deployer-binding` | `app-demo` |
+
+[cicd-serviceaccount.yaml](../kubernetes/rbac/cicd-serviceaccount.yaml)
+
+Hier sieht man noch die Ressource in Rancher
+
+![rbac](media/rbac.png)
