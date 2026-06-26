@@ -4,7 +4,7 @@ import socket
 
 app = Flask(__name__)
 
-VERSION = "1.0.1"
+VERSION = "1.0.2"
 
 HTML = """
 <!DOCTYPE html>
