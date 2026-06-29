@@ -183,7 +183,7 @@ Code Push → GitHub Actions → Docker Image Build → Push zu GHCR → kubectl
 | 7     | Podinfo deployen, Namespaces und RBAC konfigurieren                |
 | 8     | Prometheus + Grafana installieren, Dashboards einrichten, Alerting |
 | 9     | Fehleranalyse, Optimierungen, Kostenkontrolle AWS                  |
-| 10    | Dokumentation finalisieren, Präsentation vorbereiten               |
+| 10    | Dokumentation finalisieren                                         |
 
 ---
 
